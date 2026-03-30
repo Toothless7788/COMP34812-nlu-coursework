@@ -3,9 +3,9 @@
 
 
 ## Things required for each person
-- [ ] Jupyternotebook for training
-- [ ] Jupyternotebook for validation
-- [ ] Jupyternotebook for demo
+- [x] Jupyternotebook for training
+- [x] Jupyternotebook for validation
+- [x] Jupyternotebook for demo
     - Demo code
 - [ ] Selected model weights
     - Store in a cloud
