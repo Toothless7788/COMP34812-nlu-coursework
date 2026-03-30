@@ -13,3 +13,6 @@
 - Model card
 - ```Group_9_C.csv```
 
+
+## NOTE
+- ```python .\local_scorer\main.py --task av --prediction .\my_predictions\predictions_1774542319.2475436.csv```
