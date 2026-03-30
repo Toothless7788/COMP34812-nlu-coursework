@@ -7,7 +7,7 @@
 - [x] Jupyternotebook for validation
 - [x] Jupyternotebook for demo
     - Demo code
-- [ ] Selected model weights
+- [x] Selected model weights
     - Store in a cloud
     - Provide link to access it
 - [ ] Model card
