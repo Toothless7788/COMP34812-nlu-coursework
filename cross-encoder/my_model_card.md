@@ -49,12 +49,12 @@ In the multi-head decoder, predictions are made based on sub-predictions from th
 ### Training Data
 <!-- This is a short stub of information on the training data that was used, and documentation related to data pre-processing or additional filtering (if applicable). -->
 - 30K pairs of texts drawn from emails, news articles and blog posts. 
-There are mainly two data pre-processing steps: both compute the similarity between the two pieces of text. 
+- There are mainly two data pre-processing steps: both compute the similarity between the two pieces of text. 
 
-#### Similarity Score
+#### 1. Similarity Score
 - The two pieces of text are converted to embedding vectors using ```SentenceTransformer``` from ```sentence_transformers```. The similarity of the two vectors are then compared using cosine similarity to compute a similarity score. This score is then outputted to an external csv file with column "style_similarity_score", which is an input passed to the tokenizer and then the first head of the decoder. 
 
-#### Similarity Vector
+#### 2. Similarity Vector
 - An embedding vector is created for each pair of text piece. The stylometric features of each of the text piece are first extracted and they are then compared. Their difference is represented by an embedding vector, which is then outputted to a separate csv file. There are $171$ columns in this csv file, each representing 1 feature. This csv file is then read again during training, validation and evaluation, and the embedding vector is passed to the third head of the decoder directly. 
 
 ### Training Procedure
