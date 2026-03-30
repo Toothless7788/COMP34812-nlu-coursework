@@ -59,7 +59,8 @@ In the multi-head decoder, predictions are made based on sub-predictions from th
 
 ### Training Procedure
 <!-- This relates heavily to the Technical Specifications. Content here should link to that section when it is relevant to the training procedure. -->
-- TODO: Update
+- In addition to ```train.csv```, the model also requires two additional files for training. As mentioned in Sections [Similarity Score](#1-similarity-score) and [Similarity Vector](#2-similarity-vector), the model inputs require more than just the two pieces of text. Thus, before trianing, the corresponding customised csv files of the above data are generated, which are then later generated and combined with input data in ```train.csv```. 
+- The training consists of ```n``` epochs, where ```n``` is a hyperparameter selected by developers (refer to Section [Training Hyperparameters](#training-hyperparameters)). In each training loop, the input data are first moved to the correct device, e.g. cuda GPU. They are then passed to the model to generate a prediction. Binary Cross-Entropy Loss is used to compute the loss of each individual heads and also the combined loss. In PyTorch, ```BCEWithLogitsLoss``` is used. Note that the combined loss takes into account different weights of heads in calculation (refer to Section [Metrics](#metrics) for the complete formula). Backpropagation is then applied to update the fine tune the BERT (the encoder) and also the three heads (decoder). 
 
 #### Training Hyperparameters
 <!-- This is a summary of the values of hyperparameters used in training the model. -->
@@ -68,17 +69,18 @@ In the multi-head decoder, predictions are made based on sub-predictions from th
 - eval_batch_size: 32
 - seed: N/A
 - num_epochs: 3
+      - After hyperparameter selection
 
 #### Speeds, Sizes, Times
 <!-- This section provides information about how roughly how long it takes to train the model and the size of the resulting model. -->
-- overall training time: 5 hours
+- overall training time: 3 hours
 - duration per training epoch: 50 minutes
 - model size: 400MB
 
 
 ## Evaluation
 <!-- This section describes the evaluation protocols and provides the results. -->
-- TODO: Update
+- In addition to using the self-implemented TODO: Update here next
 
 ### Testing Data & Metrics
 
@@ -93,9 +95,9 @@ In the multi-head decoder, predictions are made based on sub-predictions from th
 - Recall
 - F1-score
 - Accuracy
-- Binary-Cross-Entropy Loss for each head
+- Binary Cross-Entropy Loss for each head
       - PyTorch BCEWithLogitsLoss is used
-- Combined Binary-Cross-Entropy Loss among all heads taken into account weights of each head
+- Combined Binary Cross-Entropy Loss among all heads taken into account weights of each head
       - PyTorch BCEWithLogitsLoss is used
       - It is given by the formula $combined\_bce = head\_weights_1 * bce\_head_1 + head\_weights_2 * bce\_head_2 + head\_weights_3 * bce\_head_3$
 
