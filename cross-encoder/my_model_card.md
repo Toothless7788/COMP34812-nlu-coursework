@@ -80,14 +80,18 @@ In the multi-head decoder, predictions are made based on sub-predictions from th
 
 ## Evaluation
 <!-- This section describes the evaluation protocols and provides the results. -->
-- In addition to using the self-implemented TODO: Update here next
+- In addition to using the self-implemented F1-score metric in validation, evluation is also done by running the command below: 
+```sh
+python ./local_scorer/main.py --task av --prediction <path_to_predictions_csv>
+```
+- This command provides other metrics, e.g. weighted macro F1-score and Matthews Correlation Coefficient, which allow better hyperparameter selections
+
 
 ### Testing Data & Metrics
 
 #### Testing Data
 <!-- This should describe any evaluation data used (e.g., the development/validation set provided). -->
 - A subset of the development set provided, amounting to 2K pairs. 
-- TODO: Update
 
 #### Metrics
 <!-- These are the evaluation metrics being used. -->
@@ -103,6 +107,7 @@ In the multi-head decoder, predictions are made based on sub-predictions from th
 
 ### Results
 - The model obtained an F1-score of $67\%$ and an accuracy of $70\%$.
+- TODO: Update
 
 ## Technical Specifications
 
