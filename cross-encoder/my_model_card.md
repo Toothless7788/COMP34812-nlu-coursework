@@ -9,12 +9,12 @@ repo: https://github.com/Toothless7788/COMP34812-nlu-coursework
 
 ---
 
-# Model Card for username1-username2-track_abbreviation
+# Model Card for w45242hy-username2-track_abbreviation
 
 <!-- Provide a quick summary of what the model is/does. -->
 
 This is a classification model that was trained to
-      detect whether two pieces of text were written by the same author.
+      detect whether two pieces of text were written by the same author. 
 
 
 ## Model Details
@@ -24,9 +24,9 @@ This is a classification model that was trained to
 <!-- Provide a longer summary of what this model is. -->
 
 This model is based upon a BERT model that was fine-tuned
-      on 30K pairs of texts.
+      on 30K pairs of texts. 
 
-- **Developed by:** Firstname1 Lastname1 and Firstname2 Lastname2
+- **Developed by:** Hin Yui Jacob Yip and Firstname2 Lastname2
 - **Language(s):** English
 - **Model type:** Supervised
 - **Model architecture:** Transformers
