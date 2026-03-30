@@ -9,7 +9,7 @@ repo: https://github.com/Toothless7788/COMP34812-nlu-coursework
 
 ---
 
-# Model Card for w45242hy-username2-track_abbreviation
+# Model Card for w45242hy-u14554as-track_abbreviation
 
 <!-- Provide a quick summary of what the model is/does. -->
 
@@ -31,7 +31,7 @@ In this architecture, a single encoding for both texts is used for classificatio
 In the multi-head decoder, predictions are made based on sub-predictions from three heads. Predictions of each head are based on different aspects of the two given pieces of text. Before passing the embeddings to the three heads, they are first passed to a linear layer to extract shared features. This ensures the three heads do not generate predictions independently, but rather work on shared features to give the final prediction. The first head aims at deciding whether the two pieces of text belongs to the same author primarily. However, there might be other aspects that this head is not sufficient to take into account. Thus, a second head is added which targets at comparing the style similarities between the writing styles of the two pieces of text. The two pieces of text are converted to two embedding vectors using a transformer and a similarity score is created using cosine similarity. This score is one of the inputs of the decoder. A third head is added, which focuses heavility on the difference between stylometric features of the two pieces of text. Such embedding vector is represented by $171$ features, which is then passed to the decoder directly. The final prediction is a weighted prediction of all predictions from all heads. The weight of each head can be customised, which is a hyperparameter tuned in hyperparameter selection. 
       
 
-- **Developed by:** Hin Yui Jacob Yip and Firstname2 Lastname2
+- **Developed by:** Hin Yui Jacob Yip and Abdullah Sweesi
 - **Language(s):** English
 - **Model type:** Supervised
 - **Model architecture:** Transformers
