@@ -209,3 +209,6 @@ __marimo__/
 
 # Self-defined
 .DS_Store
+sandbox/
+**/model/*.pth
+**/history/**/*.pth

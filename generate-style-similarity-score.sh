@@ -1,0 +1,1 @@
+python ./cross-encoder/src/generate_style_similarity_score.py
