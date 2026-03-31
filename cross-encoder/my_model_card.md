@@ -132,15 +132,29 @@ python ./local_scorer/main.py --task av --prediction <path_to_predictions_csv>
 - Recall
 - F1-score
 - Accuracy
-- Binary Cross-Entropy Loss for each head
-      - PyTorch BCEWithLogitsLoss is used
-- Combined Binary Cross-Entropy Loss among all heads taken into account weights of each head
-      - PyTorch BCEWithLogitsLoss is used
-      - It is given by the formula $combined\_bce = head\_weights_1 * bce\_head_1 + head\_weights_2 * bce\_head_2 + head\_weights_3 * bce\_head_3$
+- Matthews Correlation Coefficient
+- Binary Cross-Entropy Loss for each head (PyTorch ```BCEWithLogitsLoss``` is used)
+- Combined Binary Cross-Entropy Loss among all heads taken into account weights of each head (PyTorch ```BCEWithLogitsLoss``` is used)
+      $$
+      \mathcal{L}_{total} = w_1 \mathcal{L}_{author} + w_2 \mathcal{L}_{neural\_style} + w_3 \mathcal{L}_{stylometric}
+      \\
+      \text{where }\mathcal{L}\text{ is Binary Cross-Entropy Loss}
+      $$
 
 ### Results
-- The model obtained an F1-score of $67\%$ and an accuracy of $70\%$.
-- TODO: Update
+- The selected model in hyperparameter selection obtained an F1-score of $83\%$ and an accuracy of $83\%$. 
+
+| Metric                          | Value            |
+|--------------------------------:|-----------------:|
+| Accuracy                        | 0.83247121641916 |
+| Macro Precision                 | 0.83297824961783 |
+| Macro Recall                    | 0.83286917947045 |
+| Macro F1                        | 0.83246915936938 |
+| Weighted Macro Precision        | 0.83297824961783 |
+| Weighted Macro Recall           | 0.83286917947045 |
+| Weighted Macro F1               | 0.83246915936938 |
+| Matthews Correlation Coefficient| 0.66584742015508 |
+
 
 ## Technical Specifications
 
