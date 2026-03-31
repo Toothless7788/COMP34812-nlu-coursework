@@ -1,0 +1,5 @@
+matplotlib
+pandas
+sentence_transformers
+torch
+transformers
