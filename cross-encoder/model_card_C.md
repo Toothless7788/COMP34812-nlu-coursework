@@ -27,7 +27,7 @@ The model implements a Hybrid Multi-Head Cross-Encoder architecture, designed to
 #### 1. Joint Representation Cross-Encoder
 The core architecture utilises a Cross-Encoder approach. It is based on the "bert-base-cased" (after hyperparameter selection mentioned in Section [Training Hyperparameters](#training-hyperparameters)). Unlike Bi-Encoders, which process texts independently, this model feeds both pieces of text simultaneously into the transformer. This allows for full self-attention across the pair, enabling the model to extract token-level interactions that are critical for identifying a single author’s unique writing style. 
 
-Given the dataset scale of 30K pairs, the Cross-Encoder provides superior predictive accuracy over Bi-Encoder alternatives, effectively managing the computational trade-off between inference speed and classification performance. 
+Given the dataset scale of 27K pairs, the Cross-Encoder provides superior predictive accuracy over Bi-Encoder alternatives, effectively managing the computational trade-off between inference speed and classification performance. 
 
 #### 2. Multi-Head Representation Fusion
 The decoder stage employs a **Multi-Task Learning** (*MTL*) strategy to regularise the model and ensure it considers multiple dimensions of authorship. Before branching into individual heads, the pooled ```[CLS]``` embedding is passed through a shared linear projection layer. This facilitates feature extraction, distilling a unified representation from which three specialised heads operate:
@@ -56,7 +56,7 @@ The final output is not a simple average, but a weighted linear combination of t
 
 ### Training Data
 <!-- This is a short stub of information on the training data that was used, and documentation related to data pre-processing or additional filtering (if applicable). -->
-- 30K pairs of texts drawn from emails, news articles and blog posts. 
+- 27K pairs of texts drawn from emails, news articles and blog posts. 
 - To augment the transformer's raw text processing, a two-stage feature engineering pipeline was implemented to generated additional signals for more accurate predictions. 
 
 #### 1. Neural Style Similarity
@@ -130,7 +130,7 @@ python ./local_scorer/main.py --task av --prediction <path_to_predictions_csv>
 
 #### Testing Data
 <!-- This should describe any evaluation data used (e.g., the development/validation set provided). -->
-- A subset of the development set provided, amounting to 2K pairs. 
+- A subset of the development set provided, amounting to 6K pairs. 
 
 #### Metrics
 <!-- These are the evaluation metrics being used. -->
