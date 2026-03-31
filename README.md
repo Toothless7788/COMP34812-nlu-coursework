@@ -1,6 +1,9 @@
 # COMP34812-nlu-coursework
 The repository for 2025-2026 COMP34812 NLU coursework
 
+# Prerequisite Of Running Code
+- GPU: T4 x 2
+
 
 # Cross-Encoder
 - ## Category
@@ -49,6 +52,7 @@ The repository for 2025-2026 COMP34812 NLU coursework
     4. Make sure ```INPUT_FOLDER_PATH``` and ```OUTPUT_FOLDER_PATH``` are the same
         - Otherwise, you have to manually update ```CROSS_ENCODER_PATH``` to read the ```.pth``` file correctly
     5. Run the notebook! 
+
 
 # Siamese LSTM
 - ## Category
