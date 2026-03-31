@@ -22,24 +22,32 @@ Its output is expected to be a label with ```1``` predicting the given two piece
 
 ### Model Description
 <!-- Provide a longer summary of what this model is. -->
-This model is based upon a BERT model that was fine-tuned on 30K pairs of texts. It consists of two parts, a cross-encoder and a multi-head decoder. 
+The model implements a Hybrid Multi-Head Cross-Encoder architecture, designed to capture both deep semantic interactions and explicit linguistic signatures. The system is composed of a high-capacity transformer backbone and a specialised multi-head decoder. 
 
-In the cross-encoder architecture, both texts are simultaneously fed through a transformer network. 
+#### 1. Joint Representation Cross-Encoder
+The core architecture utilises a Cross-Encoder approach. It is based on the "bert-base-cased" (after hyperparameter selection mentioned in Section [Training Hyperparameters](#training-hyperparameters)). Unlike Bi-Encoders, which process texts independently, this model feeds both pieces of text simultaneously into the transformer. This allows for full self-attention across the pair, enabling the model to extract token-level interactions that are critical for identifying a single author’s unique writing style. 
 
-In this architecture, a single encoding for both texts is used for classification. Cross-encoders are normally used when there is a pre-defined set of text pairs to be scored. The truncation is done by the tokenizer. Cross-encoders usually outperform bi-encoders but do not scale well when the dataset is large. Given that the training dataset only has 30K pairs of text, this makes cross-encoders suitable for this task. 
+Given the dataset scale of 30K pairs, the Cross-Encoder provides superior predictive accuracy over Bi-Encoder alternatives, effectively managing the computational trade-off between inference speed and classification performance. 
 
-In the multi-head decoder, predictions are made based on sub-predictions from three heads. Predictions of each head are based on different aspects of the two given pieces of text. Before passing the embeddings to the three heads, they are first passed to a linear layer to extract shared features. This ensures the three heads do not generate predictions independently, but rather work on shared features to give the final prediction. The first head aims at deciding whether the two pieces of text belongs to the same author primarily. However, there might be other aspects that this head is not sufficient to take into account. Thus, a second head is added which targets at comparing the style similarities between the writing styles of the two pieces of text. The two pieces of text are converted to two embedding vectors using a transformer and a similarity score is created using cosine similarity. This score is one of the inputs of the decoder. A third head is added, which focuses heavility on the difference between stylometric features of the two pieces of text. Such embedding vector is represented by $171$ features, which is then passed to the decoder directly. The final prediction is a weighted prediction of all predictions from all heads. The weight of each head can be customised, which is a hyperparameter tuned in hyperparameter selection. 
-      
+#### 2. Multi-Head Representation Fusion
+The decoder stage employs a **Multi-Task Learning** (*MTL*) strategy to regularise the model and ensure it considers multiple dimensions of authorship. Before branching into individual heads, the pooled ```[CLS]``` embedding is passed through a shared linear projection layer. This facilitates feature extraction, distilling a unified representation from which three specialised heads operate:
+- **Global Author Head**: The primary classification branch that assesses the probability of a shared identity based on the joint encoding. 
+- **Neural Style Head**: This head is supervised by Style Similarity Scores. By calculating the cosine similarity between independent *SentenceTransformer* embeddings of the two texts, the model is forced to account for high-level semantic alignment. 
+- **Stylometric Differential Head**: This head takes a $171$-dimensional **Feature Delta Vector**. This vector represents the absolute difference between explicit stylometric markers (e.g. function word frequencies, POS trigram distributions, and punctuation density). It is given by the formula $\left|text_1 - text_2\right|$. 
+
+#### 3. Weighted Ensemble Inference
+The final output is not a simple average, but a weighted linear combination of the logits from all three heads. This allows for fine-tuned calibration, prioritising the deep transformer interactions while using stylometric and neural similarities as weighted "expert opinions" to resolve ambiguous cases. 
+
 
 - **Developed by:** Hin Yui Jacob Yip and Abdullah Sweesi
 - **Language(s):** English
 - **Model type:** Supervised
 - **Model architecture:** Transformers
-- **Finetuned from model [optional]:** bert-base-uncased
+- **Fine-tuned from model [optional]:** bert-base-uncased
 
 ### Model Resources
 <!-- Provide links where applicable. -->
-- **Repository:** [Link to BERT model used](https://huggingface.co/google-bert/bert-base-uncased)
+- **Repository:** [Link to BERT model used](https://huggingface.co/google-bert/bert-base-cased)
 - **Paper:** [Paper explaining why a cross-encoder is chosen for this task](https://ceur-ws.org/Vol-3180/paper-206.pdf)
 - **Documentation:**: [Website explaining what a cross-encoder is](https://sbert.net/examples/cross_encoder/applications/README.html)
 
@@ -54,8 +62,8 @@ In the multi-head decoder, predictions are made based on sub-predictions from th
 #### 1. Similarity Score
 - The two pieces of text are converted to embedding vectors using ```SentenceTransformer``` from ```sentence_transformers```. The similarity of the two vectors are then compared using cosine similarity to compute a similarity score. This score is then outputted to an external csv file with column "style_similarity_score", which is an input passed to the tokenizer and then the first head of the decoder. 
 
-#### 2. Similarity Vector
-- An embedding vector is created for each pair of text piece. The stylometric features of each of the text piece are first extracted and they are then compared. Their difference is represented by an embedding vector, which is then outputted to a separate csv file. There are $171$ columns in this csv file, each representing 1 feature. This csv file is then read again during training, validation and evaluation, and the embedding vector is passed to the third head of the decoder directly. 
+#### 2. Stylometric Delta Vector
+- An embedding vector is created for each pair of text piece. The stylometric features of each of the text piece are first extracted and they are then compared. Their difference is represented by an embedding vector, i.e. $\left|text_1 - text_2\right|$, which is then outputted to a separate csv file. There are $171$ columns in this csv file, each representing 1 feature. This csv file is then read again during training, validation and evaluation, and the embedding vector is passed to the third head of the decoder directly. 
 
 ### Training Procedure
 <!-- This relates heavily to the Technical Specifications. Content here should link to that section when it is relevant to the training procedure. -->
@@ -123,7 +131,8 @@ python ./local_scorer/main.py --task av --prediction <path_to_predictions_csv>
 
 ## Bias, Risks, and Limitations
 <!-- This section is meant to convey both technical and sociotechnical limitations. -->
-- Any inputs (concatenation of two sequences) longer than 512 subwords will be truncated by the model.
+- Any inputs (concatenation of two sequences) longer than 512 subwords will be truncated by the model. 
+      - A cross-encoder is used so the 512-token limit is shared between Text 1 and Text 2
 - Batch size must not be larger than 32 or the GPU cannot allocate enough memory storage (at least on Kaggle). 
 
 
