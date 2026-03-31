@@ -144,16 +144,16 @@ python ./local_scorer/main.py --task av --prediction <path_to_predictions_csv>
 ### Results
 - The selected model in hyperparameter selection obtained an F1-score of $83\%$ and an accuracy of $83\%$. 
 
-| Metric                          | Value            |
-|--------------------------------:|-----------------:|
-| Accuracy                        | 0.83247121641916 |
-| Macro Precision                 | 0.83297824961783 |
-| Macro Recall                    | 0.83286917947045 |
-| Macro F1                        | 0.83246915936938 |
-| Weighted Macro Precision        | 0.83297824961783 |
-| Weighted Macro Recall           | 0.83286917947045 |
-| Weighted Macro F1               | 0.83246915936938 |
-| Matthews Correlation Coefficient| 0.66584742015508 |
+| Metric                          | Value              |
+|--------------------------------:|-------------------:|
+| Accuracy                        | $0.83247121641916$ |
+| Macro Precision                 | $0.83297824961783$ |
+| Macro Recall                    | $0.83286917947045$ |
+| Macro F1                        | $0.83246915936938$ |
+| Weighted Macro Precision        | $0.83297824961783$ |
+| Weighted Macro Recall           | $0.83286917947045$ |
+| Weighted Macro F1               | $0.83246915936938$ |
+| Matthews Correlation Coefficient| $0.66584742015508$ |
 
 
 ## Technical Specifications
