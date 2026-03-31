@@ -36,7 +36,7 @@ The decoder stage employs a **Multi-Task Learning** (*MTL*) strategy to regulari
 - **Stylometric Differential Head**: This head takes a $171$-dimensional **Feature Delta Vector**. This vector represents the absolute difference between explicit stylometric markers (e.g. function word frequencies, POS trigram distributions, and punctuation density). It is given by the formula $\left|text_1 - text_2\right|$. 
 
 #### 3. Weighted Ensemble Inference
-The final output is not a simple average, but a weighted linear combination of the logits from all three heads. This allows for fine-tuned calibration, prioritising the deep transformer interactions while using stylometric and neural similarities as weighted "expert opinions" to resolve ambiguous cases. 
+The final output is not a simple average, but a weighted linear combination of the logits from all three heads. This allows for fine-tuned calibration, prioritising the deep transformer interactions while using stylometric and neural similarities as weighted "expert opinions" to resolve ambiguous cases. It is expected that all elements in ```head_weights``` sum up to $1$. However, if they do not, ```torch.nn.functional.softmax``` is applied to the ```head_weights``` to scale the weights accordingly. 
 
 
 - **Developed by:** Hin Yui Jacob Yip and Abdullah Sweesi
@@ -119,6 +119,12 @@ The model is optimised over $n$ epochs (see ```num_epochs``` in [Training Hyperp
 python ./local_scorer/main.py --task av --prediction <path_to_predictions_csv>
 ```
 
+### Hyperparameter Selection
+| Variable                                                               | Possible values                                |
+|-----------------------------------------------------------------------:|-----------------------------------------------:|
+| ```num_epochs```                                                       | ```[1, 3, 5, 10]```                            |
+| Weight of each head in ```head_weights``` (all elements sum up to $1$) | ```[0.1, 0.25, 0.5, 0.8]```                    |
+| ```model_name```                                                       | ```["bert-base-uncased", "bert-base-cased"]``` |
 
 ### Testing Data & Metrics
 
@@ -164,18 +170,17 @@ python ./local_scorer/main.py --task av --prediction <path_to_predictions_csv>
 - GPU: T4 x 2
 
 ### Software
-- Transformers 4.18.0
-- Pytorch 1.11.0+cu113
+- Transformers 5.0.0
+- Pytorch 2.10.0+cu128
 
 
 ## Bias, Risks, and Limitations
 <!-- This section is meant to convey both technical and sociotechnical limitations. -->
-- Any inputs (concatenation of two sequences) longer than 512 subwords will be truncated by the model. 
-      - A cross-encoder is used so the 512-token limit is shared between Text 1 and Text 2
+- Any inputs (concatenation of two sequences) longer than 512 subwords will be truncated by the model. This is because a cross-encoder is used so the 512-token limit is shared between Text 1 and Text 2
 - Batch size must not be larger than 32 or the GPU cannot allocate enough memory storage (at least on Kaggle). 
 
 
 ## Additional Information
 <!-- Any other information that would be useful for other people to know. -->
 - The hyperparameters were determined by experimentation with different values. 
-- Graphs of losses, F1-score, Precision and Recall, are plotted to determine the optimla head weights and BERT model to be used for this task. Refer to [Hyperparameter Selection](#training-hyperparameters) for more information on the optimal hyperparameters found. 
+- Graphs of losses, F1-score, Precision and Recall, are plotted to determine the optimla head weights and BERT model to be used for this task. Refer to [Hyperparameter Selection](#hyperparameter-selection) for more information on the optimal hyperparameters found. 
