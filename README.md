@@ -1,6 +1,9 @@
 # COMP34812-nlu-coursework
 The repository for 2025-2026 COMP34812 NLU coursework
 
+# Prerequisite Of Running Code
+- GPU: T4 x 2
+
 
 # Cross-Encoder
 - ## Category
