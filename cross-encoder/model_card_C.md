@@ -9,7 +9,7 @@ repo: https://github.com/Toothless7788/COMP34812-nlu-coursework
 
 ---
 
-# Model Card for w45242hy-u14554as-track_abbreviation
+# Model Card for w45242hy-u14554as-AV
 
 <!-- Provide a quick summary of what the model is/does. -->
 
