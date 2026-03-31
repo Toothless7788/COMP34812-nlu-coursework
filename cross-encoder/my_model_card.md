@@ -57,27 +57,43 @@ The final output is not a simple average, but a weighted linear combination of t
 ### Training Data
 <!-- This is a short stub of information on the training data that was used, and documentation related to data pre-processing or additional filtering (if applicable). -->
 - 30K pairs of texts drawn from emails, news articles and blog posts. 
-- There are mainly two data pre-processing steps: both compute the similarity between the two pieces of text. 
+- To augment the transformer's raw text processing, a two-stage feature engineering pipeline was implemented to generated additional signals for more accurate predictions. 
 
-#### 1. Similarity Score
-- The two pieces of text are converted to embedding vectors using ```SentenceTransformer``` from ```sentence_transformers```. The similarity of the two vectors are then compared using cosine similarity to compute a similarity score. This score is then outputted to an external csv file with column "style_similarity_score", which is an input passed to the tokenizer and then the first head of the decoder. 
+#### 1. Neural Style Similarity
+For each pair, both documents are projected into a high-dimensional vector space using a pre-trained ```SentenceTransformer``` (```all-MiniLM-L6-v2```). The **cosine similarity** between these embeddings is calculated to produce a ```style_similarity_score```. This score serves as a continuous supervision signal for the second head of the decoder. It helps the model to recognise semantic alignment beyond simple token overlap. 
 
 #### 2. Stylometric Delta Vector
-- An embedding vector is created for each pair of text piece. The stylometric features of each of the text piece are first extracted and they are then compared. Their difference is represented by an embedding vector, i.e. $\left|text_1 - text_2\right|$, which is then outputted to a separate csv file. There are $171$ columns in this csv file, each representing 1 feature. This csv file is then read again during training, validation and evaluation, and the embedding vector is passed to the third head of the decoder directly. 
+To incorporate classical linguistic insights, the model utilises a $171$-dimensional Stylometric Delta Vector. This vector is constructed by the following steps: 
+1. Extracting a comprehensive suite of features, e.g. function word frequencies, POS trigrams, punctuation density and lexical richness, for both pieces of text, i.e. $text_1$ and $text_2$. 
+2. Computing the absolute difference between these feature sets, i.e. $\left|text_1 - text_2\right|$. 
+3. Normalising the resulting vector using a ```StandardScaler``` fitted on the training dataset. 
+This vector provides the third decoder head with an explicit map of difference of the author's linguistic habits, which is passed directly to the decoder to complement the neural embeddings. 
 
 ### Training Procedure
 <!-- This relates heavily to the Technical Specifications. Content here should link to that section when it is relevant to the training procedure. -->
-- In addition to ```train.csv```, the model also requires two additional files for training. As mentioned in Sections [Similarity Score](#1-similarity-score) and [Similarity Vector](#2-similarity-vector), the model inputs require more than just the two pieces of text. Thus, before trianing, the corresponding customised csv files of the above data are generated, which are then later generated and combined with input data in ```train.csv```. 
-- The training consists of ```n``` epochs, where ```n``` is a hyperparameter selected by developers (refer to Section [Training Hyperparameters](#training-hyperparameters)). In each training loop, the input data are first moved to the correct device, e.g. cuda GPU. They are then passed to the model to generate a prediction. Binary Cross-Entropy Loss is used to compute the loss of each individual heads and also the combined loss. In PyTorch, ```BCEWithLogitsLoss``` is used. Note that the combined loss takes into account different weights of heads in calculation (refer to Section [Metrics](#metrics) for the complete formula). Backpropagation is then applied to update the fine tune the BERT (the encoder) and also the three heads (decoder). 
+The training workflow is designed as a Multi-Input Supervised Learning task. Unlike standard BERT classifiers, this model requires a synchronised data stream from all three sources, i.e. the pair of raw text pieces, the neural nsimilarity scores and the stylometric delta vectors. 
+
+#### Optimisation and Loss Strategy
+The model is optimised over $n$ epochs (see ```num_epochs``` in [Training Hyperparameters](#training-hyperparameters) for the final value picked) using the **AdamW** optimiser with a linear learning rate. To ensure robust convergence across all specialised heads, a composite loss function is employed: 
+- **Objective Function**: ```BCEWithLogitsLoss``` from PyTorch is utilised for all heads to increase numerical stability using the log-sum-exp trick
+- **Joint Loss Calculation**: The total loss of the whole model $\mathcal{L}_{total}$ is a weighted summation of the primary author verification loss and the additional stylistic losses. It uses the same weightings as the one used in predictions: 
+      $$
+      \mathcal{L}_{total} = w_1 \mathcal{L}_{author} + w_2 \mathcal{L}_{neural\_style} + w_3 \mathcal{L}_{stylometric}
+      $$
+      $$
+      prediction_{total} = w_1 prediction_{author} + w_2 prediction_{neural\_style} + w_3 prediction_{stylometric}
+      $$
+- **Backpropagation**: Gradients are flowed back through the multi-head decoder into the shared projection layer and finally into the BERT encoder. This ensures that the transformer backbone learns representations that are simultaneously optimised for semantic intent, neural style and linguistic structure. 
 
 #### Training Hyperparameters
 <!-- This is a summary of the values of hyperparameters used in training the model. -->
-- learning_rate: 2e-05
-- train_batch_size: 32
-- eval_batch_size: 32
-- seed: N/A
-- num_epochs: 3
-      - After hyperparameter selection
+- ```learning_rate```: 2e-05
+- ```train_batch_size```: 32
+- ```eval_batch_size```: 32
+- ```seed```: N/A
+- ```num_epochs```: 3 (After hyperparameter selection)
+- ```model_name```: "bert-base-cased" (After hyperparameter selection)
+- ```head_weights```: ```torch.tensor([0.8, 0.1, 0.1], dtype=torch.float)``` (After hyperparameter selection; ```head_weights[0]``` is the weight for the first head and so on)
 
 #### Speeds, Sizes, Times
 <!-- This section provides information about how roughly how long it takes to train the model and the size of the resulting model. -->
@@ -88,11 +104,20 @@ The final output is not a simple average, but a weighted linear combination of t
 
 ## Evaluation
 <!-- This section describes the evaluation protocols and provides the results. -->
-- In addition to using the self-implemented F1-score metric in validation, evluation is also done by running the command below: 
+- Self-implemented F1-score, precision and recall metrics have been used in validation, which essentially calculates the number of true-positive (TP), false-positive (FP), true-negative (TN) and false-negative (FN). Based on these metrics, graphs of different hyperparameter settings have been plotted and the best hyperparameter settings are picked by developers manually. Below contains the formulae for calculating the metrics: 
+      $$
+      precision = \frac{TP}{TP + FP}
+      $$
+      $$
+      recall = \frac{TP}{TP + FN}
+      $$
+      $$
+      F1 = \frac{2 \times precision \times recall}{precision + recall}
+      $$
+- In addition to the observing from the graph during hyperparameter selection, more metrics of models (e.g. *weighted macro F1-score* and *Matthews Correlation Coefficient*) have been computed and compared. Below contains the command to generate those metrics: 
 ```sh
 python ./local_scorer/main.py --task av --prediction <path_to_predictions_csv>
 ```
-- This command provides other metrics, e.g. weighted macro F1-score and Matthews Correlation Coefficient, which allow better hyperparameter selections
 
 
 ### Testing Data & Metrics
