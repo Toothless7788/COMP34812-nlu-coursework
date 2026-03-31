@@ -6,7 +6,7 @@ The repository for 2025-2026 COMP34812 NLU coursework
 - ## Category
     - **C**: Deep learning-based approaches underpinned by transformer architectures
 - ## External Code/Model Reused
-    - [transformers/bert-base-cased```](https://huggingface.co/google-bert/bert-base-cased)
+    - [transformers/bert-base-cased](https://huggingface.co/google-bert/bert-base-cased)
         - Encoder part of the model
     - [sentence-transformers/all-MiniLM-L6-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2)
         - For computing ```style_similarity_score```, which is an additional input to the model (the model expects more than two pieces of text)
