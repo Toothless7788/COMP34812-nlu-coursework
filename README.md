@@ -50,6 +50,7 @@ The repository for 2025-2026 COMP34812 NLU coursework
         - Otherwise, you have to manually update ```CROSS_ENCODER_PATH``` to read the ```.pth``` file correctly
     5. Run the notebook! 
 
+
 # Siamese LSTM
 - ## Category
     - **B**: Deep learning-based approaches that do not employ transformer architectures
