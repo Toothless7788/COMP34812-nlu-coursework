@@ -1,5 +1,5 @@
 ## Things required in general
-- [ ] ```README.md```
+- [x] ```README.md```
 
 
 ## Things required for each person
@@ -11,8 +11,8 @@
     - Store in a cloud
     - Provide link to access it
         - [https://livemanchesterac-my.sharepoint.com/:u:/g/personal/hin_yip-2_student_manchester_ac_uk/IQCqvNYKjup1TJiuN0rNVV5pATcs55cOX-ljPt6ymyYczzc?e=4I1yvB](https://livemanchesterac-my.sharepoint.com/:u:/g/personal/hin_yip-2_student_manchester_ac_uk/IQCqvNYKjup1TJiuN0rNVV5pATcs55cOX-ljPt6ymyYczzc?e=4I1yvB)
-- [ ] Model card
-- [ ] ```Group_9_C.csv```
+- [x] Model card
+- [x] ```Group_9_C.csv```
 
 
 ## NOTE
